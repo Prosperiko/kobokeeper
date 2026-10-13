@@ -8,6 +8,8 @@ from app.db import init_db
 from app.routes.api import router as api_router
 from app.routes.pages import router as pages_router
 
+from app.routes.export import router as export_router
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -24,6 +26,7 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     app.include_router(pages_router)
     app.include_router(api_router)
+    app.include_router(export_router)
 
     @app.get("/", include_in_schema=False)
     def root_redirect() -> RedirectResponse:
@@ -33,3 +36,7 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+@app.get("/health")
+def health() -> dict:    
+    return {"ok": True}
