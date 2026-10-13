@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · KoboKeeper{% endblock %}
+{% block content %}
+<section class="dashboard-grid">
+  <div class="card">
+    <h2>This Month</h2>
+    <form method="get" class="month-filter">
+      <input type="number" name="year" min="2000" max="2100" value="{{ year }}" />
+      <input type="number" name="month" min="1" max="12" value="{{ month }}" />
+      <button type="submit">Apply</button>
+    </form>
+    <p class="money">₦{{ "{:,.2f}".format(monthly_total) }}</p>
+    <div class="export-actions">
+      <a href="/export/csv?year={{ year }}&month={{ month }}">Export CSV</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Category Breakdown</h3>
+    {% if category_totals %}
+    {% set max_total = category_totals | map(attribute='total') | max %}
+    <ul class="bars">
+      {% for row in category_totals %}
+      <li>
+        <span>{{ row.name }}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: {{ (row.total / max_total * 100) if max_total else 0 }}%"></div>
+        </div>
+        <strong>₦{{ "{:,.2f}".format(row.total) }}</strong>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No totals yet for this month.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="card">
+  <h3>Recent Receipts</h3>
+  {% if recent_receipts %}
+  <table>
+    <thead>
+      <tr>
+        <th>Vendor</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for receipt in recent_receipts %}
+      <tr>
+        <td>{{ receipt.vendor_name }}</td>
+        <td>{{ receipt.date or "-" }}</td>
+        <td>₦{{ "{:,.2f}".format(receipt.total) }}</td>
+        <td><span class="status status-{{ receipt.status }}">{{ receipt.status }}</span></td>
+        <td>
+          <a href="/export/receipt/{{ receipt.id }}/pdf">PDF</a>
+          <button
+            type="button"
+            hx-get="/api/receipts/{{ receipt.id }}/delete?confirm=true"
+            hx-target="closest tr"
+            hx-swap="outerHTML"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <p>No receipts yet. Upload your first receipt to start building your offline ledger.</p>
+    <a class="button-link" href="/upload">Upload your first receipt</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
