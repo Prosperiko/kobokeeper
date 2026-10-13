@@ -1,0 +1,31 @@
+:root {
+  color-scheme: light;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f7f8fb;
+  color: #1f2937;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #dbe2ea;
+  background: #ffffff;
+}
+
+header a {
+  color: inherit;
+  text-decoration: none;
+  margin-left: 0.8rem;
+}
+
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
