@@ -1,8 +1,59 @@
 {% extends "base.html" %}
 {% block title %}Review · KoboKeeper{% endblock %}
 {% block content %}
-<section>
+<section class="card">
   <h2>Review extraction</h2>
-  <p>Editable extraction review form will appear here in the next phase.</p>
+  {% if warning %}
+  <div class="warning">{{ warning }}</div>
+  {% endif %}
+
+  <form method="post" action="/api/receipts/confirm">
+    <input type="hidden" name="raw_ocr_text" value="{{ raw_ocr_text }}" />
+    <input type="hidden" name="image_path" value="{{ image_path }}" />
+
+    <div class="form-grid">
+      <label>Vendor <input type="text" name="vendor_name" value="{{ data.vendor or '' }}" required /></label>
+      <label>Date <input type="date" name="date" value="{{ data.date or '' }}" /></label>
+      <label>Currency <input type="text" name="currency" value="{{ data.currency or 'NGN' }}" /></label>
+      <label>Total <input type="number" step="0.01" name="total" value="{{ data.total or 0 }}" required /></label>
+      <label>Tax <input type="number" step="0.01" name="tax" value="{{ data.tax if data.tax is not none else '' }}" /></label>
+      <label>
+        Category
+        <select name="category_id" required>
+          {% for category in categories %}
+          <option value="{{ category.id }}" {% if data.suggested_category == category.name %}selected{% endif %}>
+            {{ category.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <h3>Line items</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody id="line-items-body">
+        {% for item in line_items %}
+          {% include "line_item_row.html" %}
+        {% endfor %}
+      </tbody>
+    </table>
+    <button type="button" hx-get="/api/line-items/row" hx-target="#line-items-body" hx-swap="beforeend">Add row</button>
+    <button type="submit">Save receipt</button>
+  </form>
+
+  {% if raw_ocr_text %}
+  <details>
+    <summary>View OCR text</summary>
+    <pre>{{ raw_ocr_text }}</pre>
+  </details>
+  {% endif %}
 </section>
 {% endblock %}
