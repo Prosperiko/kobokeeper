@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from difflib import get_close_matches
 from dataclasses import dataclass
 from typing import Any
 
 from ollama import Client
+from pydantic import ValidationError
 
 from app.config import get_settings
 from app.db import SEED_CATEGORIES
@@ -57,6 +59,20 @@ def _parse_model_json(raw_text: str) -> dict[str, Any]:
         return json.loads(repaired)
 
 
+def _normalize_suggested_category(value: object) -> str:
+    """Map noisy model category text to one seeded category or fallback Other."""
+
+    if not isinstance(value, str):
+        return "Other"
+    normalized = value.strip().title()
+    if not normalized:
+        return "Other"
+    if normalized in SEED_CATEGORIES:
+        return normalized
+    matches = get_close_matches(normalized, SEED_CATEGORIES, n=1, cutoff=0.75)
+    return matches[0] if matches else "Other"
+
+
 def extract_receipt_data(ocr_text: str, client: Client | None = None) -> ReceiptData:
     """
     Convert OCR text into structured receipt data using local Gemma via Ollama.
@@ -89,4 +105,8 @@ def extract_receipt_data(ocr_text: str, client: Client | None = None) -> Receipt
     except json.JSONDecodeError as exc:
         raise ExtractError(message="Model returned invalid JSON", raw_text=raw_text) from exc
 
-    return ReceiptData.model_validate(payload)
+    payload["suggested_category"] = _normalize_suggested_category(payload.get("suggested_category"))
+    try:
+        return ReceiptData.model_validate(payload)
+    except ValidationError as exc:
+        raise ExtractError(message="Model returned invalid receipt fields", raw_text=raw_text) from exc

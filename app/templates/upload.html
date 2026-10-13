@@ -1,8 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Upload · KoboKeeper{% endblock %}
 {% block content %}
-<section>
+<section class="card">
   <h2>Upload receipt</h2>
-  <p>Upload and extraction UI will appear here in the next phase.</p>
+  <form
+    hx-post="/api/extract"
+    hx-target="#review-target"
+    hx-swap="innerHTML"
+    enctype="multipart/form-data"
+    class="upload-form"
+  >
+    <label class="dropzone">
+      <span>Drop image/PDF here or click to select</span>
+      <input type="file" name="receipt_file" accept=".jpg,.jpeg,.png,.webp,.pdf" required />
+    </label>
+    <button type="submit">Extract receipt</button>
+  </form>
 </section>
+<section id="review-target"></section>
 {% endblock %}
