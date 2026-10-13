@@ -174,10 +174,9 @@ async def confirm_receipt(request: Request) -> RedirectResponse:
             )
 
         learn(db, receipt)
-        category_name = db.scalar(select(Category.name).where(Category.id == receipt.category_id)) or "Other"
         db.commit()
 
-    flash = f"Receipt saved. KoboKeeper learned '{vendor_name or 'Unknown Vendor'}' → {category_name}."
+    flash = "Receipt saved. KoboKeeper updated vendor memory."
     response = RedirectResponse(url="/dashboard", status_code=303)
     response.set_cookie("flash", quote(flash, safe=""), max_age=120, httponly=True, samesite="lax")
     return response
