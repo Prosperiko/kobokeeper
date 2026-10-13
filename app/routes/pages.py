@@ -60,9 +60,12 @@ def dashboard_page(request: Request, year: int | None = None, month: int | None 
         "recent_receipts": recent_receipts,
         "year": selected_year,
         "month": selected_month,
-        "flash": unquote(request.query_params.get("flash", "")) if request.query_params.get("flash") else None,
+        "flash": unquote(request.cookies.get("flash", "")) if request.cookies.get("flash") else None,
     }
-    return templates.TemplateResponse(request=request, name="dashboard.html", context=context)
+    response = templates.TemplateResponse(request=request, name="dashboard.html", context=context)
+    if context["flash"]:
+        response.delete_cookie("flash")
+    return response
 
 
 @router.get("/upload", response_class=HTMLResponse)

@@ -54,7 +54,8 @@ def test_upload_confirm_learn_and_delete_flow(client, monkeypatch) -> None:
         follow_redirects=False,
     )
     assert confirm_response.status_code == 303
-    assert confirm_response.headers["location"].startswith("/dashboard?flash=")
+    assert confirm_response.headers["location"] == "/dashboard"
+    assert "flash=" in confirm_response.headers.get("set-cookie", "")
 
     with db.SessionLocal() as session:
         receipt = session.scalar(select(Receipt).where(Receipt.vendor_name == "Shoprite Ikeja"))

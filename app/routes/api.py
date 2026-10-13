@@ -178,17 +178,20 @@ async def confirm_receipt(request: Request) -> RedirectResponse:
         db.commit()
 
     flash = f"Receipt saved. KoboKeeper learned '{vendor_name or 'Unknown Vendor'}' → {category_name}."
-    return RedirectResponse(url=f"/dashboard?flash={quote(flash)}", status_code=303)
+    response = RedirectResponse(url="/dashboard", status_code=303)
+    response.set_cookie("flash", quote(flash, safe=""), max_age=120, httponly=True, samesite="lax")
+    return response
 
 
 @router.get("/receipts/{receipt_id}/delete", response_class=HTMLResponse)
-def delete_receipt(receipt_id: int, confirm: bool = False) -> HTMLResponse:
+def delete_receipt(request: Request, receipt_id: int, confirm: bool = False) -> HTMLResponse:
     """Delete a receipt after user confirmation from HTMX UI."""
 
     if not confirm:
-        return HTMLResponse(
-            "<div class='danger-confirm'>Delete this receipt? "
-            f"<a href='/api/receipts/{receipt_id}/delete?confirm=true'>Yes, delete</a></div>"
+        return templates.TemplateResponse(
+            request=request,
+            name="delete_confirm.html",
+            context={"receipt_id": receipt_id},
         )
 
     with SessionLocal() as db:
