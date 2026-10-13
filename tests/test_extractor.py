@@ -87,6 +87,45 @@ def test_extract_receipt_data_defaults_qty_and_null_tax() -> None:
     assert data.items[0].qty == 1
 
 
+def test_extract_receipt_data_raises_extract_error_on_schema_validation() -> None:
+    content = """
+    {
+      "vendor": "Random Vendor",
+      "date": "2026-09-13",
+      "currency": "NGN",
+      "total": "N/A",
+      "tax": null,
+      "items": [{"name": "Milk", "qty": 1, "unit_price": 2600.00, "amount": 5200.00}],
+      "suggested_category": "Food"
+    }
+    """
+    client = _FakeOllamaClient(content)
+
+    with pytest.raises(ExtractError) as exc_info:
+        extract_receipt_data("Adequate OCR text for validation handling checks.", client=client)
+
+    assert "N/A" in exc_info.value.raw_text
+
+
+def test_extract_receipt_data_normalizes_suggested_category() -> None:
+    content = """
+    {
+      "vendor": "Random Vendor",
+      "date": "2026-09-13",
+      "currency": "NGN",
+      "total": 5200.00,
+      "tax": null,
+      "items": [{"name": "Milk", "qty": 1, "unit_price": 2600.00, "amount": 5200.00}],
+      "suggested_category": "offce supplies"
+    }
+    """
+    client = _FakeOllamaClient(content)
+
+    data = extract_receipt_data("Adequate OCR text for category normalization checks.", client=client)
+
+    assert data.suggested_category == "Office Supplies"
+
+
 def test_extract_receipt_data_raises_for_too_short_ocr_text() -> None:
     client = _FakeOllamaClient(NIGERIAN_RECEIPT_JSON)
 
