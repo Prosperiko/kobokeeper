@@ -172,3 +172,61 @@ select {
 .dropzone input {
   margin-top: 0.7rem;
 }
+
+
+
+/* ============================================================
+   Extraction progress indicator (htmx) — append to style.css
+   ============================================================ */
+
+/* Disabled state while htmx is in flight (hx-disabled-elt) */
+.upload-form button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Permanent hint under the button */
+.upload-hint {
+  font-size: 0.85rem;
+  opacity: 0.65;
+  margin: 10px 0 0;
+}
+
+/* Progress panel: hidden until htmx adds .htmx-request to it */
+.extract-status {
+  display: none;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid #4f46e5;
+  border-radius: 10px;
+  background: rgba(79, 70, 229, 0.12);
+}
+.extract-status.htmx-request {
+  display: flex;
+}
+.extract-status p {
+  margin: 0;
+  line-height: 1.45;
+}
+.extract-status span {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+/* Simple CSS-only spinner */
+.spinner {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #8b7ff0;
+  border-radius: 50%;
+  animation: kkb-spin 0.9s linear infinite;
+}
+@keyframes kkb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,6 +1,51 @@
 {% extends "base.html" %}
 {% block title %}Upload · KoboKeeper{% endblock %}
 {% block content %}
+<style>
+  /* Self-contained: scoped to this page so it works regardless of style.css
+     state. Everything keys off the htmx-request class htmx adds to the FORM
+     while the request is in flight. */
+  .extract-status {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+    padding: 14px 16px;
+    border: 1px solid #4f46e5;
+    border-radius: 10px;
+    background: rgba(79, 70, 229, 0.12);
+  }
+  .upload-form.htmx-request .extract-status { display: flex; }
+  .extract-status p { margin: 0; line-height: 1.45; }
+  .extract-status span { opacity: 0.7; font-size: 0.85rem; }
+
+  .upload-hint { font-size: 0.85rem; opacity: 0.65; margin: 0; }
+
+  .upload-form.htmx-request button {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .upload-form.htmx-request input[type="file"] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .btn-wait { display: none; }
+  .upload-form.htmx-request .btn-label { display: none; }
+  .upload-form.htmx-request .btn-wait { display: inline; }
+
+  .spinner {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border: 3px solid rgba(79, 70, 229, 0.25);
+    border-top-color: #4f46e5;
+    border-radius: 50%;
+    animation: kkb-spin 0.9s linear infinite;
+  }
+  @keyframes kkb-spin { to { transform: rotate(360deg); } }
+</style>
+
 <section class="card">
   <h2>Upload receipt</h2>
   <form
@@ -14,7 +59,21 @@
       <span>Drop image/PDF here or click to select</span>
       <input type="file" name="receipt_file" accept=".jpg,.jpeg,.png,.webp,.pdf" required />
     </label>
-    <button type="submit">Extract receipt</button>
+    <button type="submit">
+      <span class="btn-label">Extract receipt</span>
+      <span class="btn-wait">&#9203; Extracting&hellip; please wait</span>
+    </button>
+    <p class="upload-hint">
+      Gemma runs on <strong>your machine</strong>, not in the cloud &mdash; extraction
+      takes <strong>30s&ndash;3 min</strong>. Keep this tab open.
+    </p>
+    <div class="extract-status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>
+        Extraction in progress&hellip; running OCR + Gemma locally.<br />
+        <span>This can take 30s&ndash;3 minutes. Don&rsquo;t close the page.</span>
+      </p>
+    </div>
   </form>
 </section>
 <section id="review-target"></section>
