@@ -7,7 +7,7 @@
 FROM python:3.13-slim
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && apt-get install -y --no-install-recommends curl ca-certificates zstd \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Ollama via the official install script (tracks current URLs;
