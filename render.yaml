@@ -1,13 +1,15 @@
 # Render blueprint for KoboKeeper.
-# IMPORTANT: gemma3:4b needs ~4GB RAM at inference. Pick an instance type with
-# at least 4GB (e.g. "standard") — pay for it with the Hacktoberfest/Render
-# promo credits, not your own money.
+# Demo runs gemma3:1b on a 2GB instance ($25/mo) paid with Hacktoberfest
+# promo credits. If the plan slug errors, just pick the "$25/month, 2GB RAM"
+# option in the dashboard UI instead — the dashboard choice wins.
 services:
   - type: web
     name: kobokeeper
     runtime: docker
-    plan: standard
+    plan: 1c-2g
     healthCheckPath: /health
     envVars:
       - key: OLLAMA_HOST
         value: http://localhost:11434
+      - key: MODEL_NAME
+        value: gemma3:1b
