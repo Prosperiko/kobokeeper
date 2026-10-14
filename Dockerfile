@@ -7,14 +7,12 @@
 FROM python:3.13-slim
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://ollama.com/download/ollama-linux-amd64.tgz -o /tmp/ollama.tgz \
-    && mkdir -p /opt/ollama \
-    && tar -xzf /tmp/ollama.tgz -C /opt/ollama \
-    && ln -s /opt/ollama/bin/ollama /usr/local/bin/ollama \
-    && rm /tmp/ollama.tgz
+# Install Ollama via the official install script (tracks current URLs;
+# standalone binary mode inside containers — no systemd needed).
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
 WORKDIR /app
 
