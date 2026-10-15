@@ -1,4 +1,4 @@
-# KoboKeeper — all-in-one image: app + Ollama + model baked in.
+# KoboKeeper your all-in-one image: app + Ollama + model baked in.
 # The HOSTED DEMO runs gemma3:1b so it fits on a small (2GB) Render instance
 # paid for with Hacktoberfest promo credits. Locally, users run `ollama pull
 # gemma3:4b` for the full-quality model — that is the real product.
