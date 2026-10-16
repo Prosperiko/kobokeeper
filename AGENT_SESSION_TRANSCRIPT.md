@@ -12,7 +12,7 @@ including where the agent ran out of quota and died mid-hardening.*
 KoboKeeper was specified as a 6-phase build plan (skeleton → extraction pipeline →
 vendor memory + review workflow → exports → UI polish → deployment). The agent was
 instructed to work **phase by phase**, commit at each checkpoint, and **stop for
-human approval between phases**. Three sessions, three human checkpoints, 14 agent
+human approval between phases**. Three sessions, three human checkpoints, 10 agent
 commits. ~164 Copilot premium credits consumed — the final session ended when the
 quota died, with the important work already landed.
 
@@ -133,7 +133,7 @@ review that mattered happened at the checkpoints.)
 
 | Layer | Author | Notes |
 |---|---|---|
-| Phases 1–3 (skeleton, extraction, vendor memory, UI, tests) | Copilot agent (supervised) | 14 commits; every phase human-verified locally before approval |
+| Phases 1–3 (skeleton, extraction, vendor memory, UI, tests) | Copilot agent (supervised) | 10 commits; every phase human-verified locally before approval |
 | Extractor hardening (validation wrap, category normalization) | Human review → agent patch | caught before Phase 3 stacked on top |
 | rapidocr pin fix | Human caught, both fixed | hallucinated version `1.3.24` → `1.2.3` |
 | Phase 4 (CSV/PDF export, seed script, Dockerfile, render.yaml) | Human-written (supervisor) | agent quota was dead; hand-written to spec |
